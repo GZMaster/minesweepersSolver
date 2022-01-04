@@ -52,18 +52,20 @@ def find_UCells(board):
         resol = pos[i]
         row, col = resol
 
-        count = check_unknown(row, col, u)
+        count_unknown = check_value(row, col, u)
+        count_flags = check_value(row, col, F)
 
-        if check_no_U(n[i], count) == True:
+        if n[i] == count_unknown + count_flags:
             pos_local = get_Pos(row, col, u)
-            pos_x, pos_y = pos_local
-            flag_cell(pos_x, pos_y)
+            print(pos_local)
+            # pos_x, pos_y = pos_local
+            # flag_cell(pos_x, pos_y)
         else:
             print('mismatch')
     return board
 
 
-def check_unknown(cell_x, cell_y, value):
+def check_value(cell_x, cell_y, value):
     dig_count = 0
     if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
         dig_count += 1
@@ -141,16 +143,6 @@ def open_cell(cell_x, cell_y):
 def flag_cell(cell_x, cell_y):
     f = 'F'
     board[cell_x][cell_y] = f
-
-
-# check if the number of bombs is more than the unkown
-
-
-def check_no_U(num_of_N, num_of_U):
-    if num_of_N == num_of_U:
-        return True
-    else:
-        return False
 
 
 # check if a cell has unknown value
