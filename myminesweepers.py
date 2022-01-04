@@ -4,9 +4,6 @@
 # of values
 
 import pprint
-import pandas
-import numpy
-# import pandas
 
 # the variable for the unknown part of the cell
 u = 'U'
@@ -36,7 +33,7 @@ board = [
 # Todo: Integrate the board variables so it can accept input data instead of hardcoding
 
 
-def find_diagonals(board):
+def find_UCells(board):
     # the variable for the unknown cells
     u = 'U'
     F = 'F'
@@ -54,76 +51,79 @@ def find_diagonals(board):
     for i in range(len(pos)):
         resol = pos[i]
         row, col = resol
-        dig_count = 0
-        if in_range_height(row, -1) and in_range_width(col, -1) and in_cell(row, col, -1, -1, u) == u:
-            if check_crossair(row, col, u) == u:
-                dig_count += 1
-        if in_range_height(row, -1) and in_range_width(col, 1) and in_cell(row, col, -1, 1, u) == u:
-            if check_crossair(row, col, u) == u:
-                dig_count += 1
-        if in_range_height(row, 1) and in_range_width(col, -1) and in_cell(row, col, 1, -1, u) == u:
-            print(row, col)
-            if check_crossair(row, col, u) == u:
-                dig_count += 1
-        if in_range_height(row, 1) and in_range_width(col, 1) and in_cell(row, col, 1, 1, u) == u:
-            if check_crossair(row, col, u) == u:
-                dig_count += 1
-        if check_no_U(n[i], dig_count) == True:
-            pos_x, pos_y = get_digPos(row, col, u)
+
+        count = check_unknown(row, col, u)
+
+        if check_no_U(n[i], count) == True:
+            pos_local = get_Pos(row, col, u)
+            pos_x, pos_y = pos_local
             flag_cell(pos_x, pos_y)
         else:
             print('mismatch')
     return board
 
+
+def check_unknown(cell_x, cell_y, value):
+    dig_count = 0
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
+        dig_count += 1
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
+        dig_count += 1
+    return dig_count
+
+
 # gets the postition of the unknown crossair
 
 
-def get_crossPos(cell_x, cell_y, value):
+def get_Pos(cell_x, cell_y, value):
     position_x = ()
     position_y = ()
     if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y - 1
         return position_x, position_y
-    elif in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
+    if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y + 1
         return position_x, position_y
-    elif in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 0
         return position_x, position_y
-    elif in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 0
         return position_x, position_y
-    else:
-        return 0, 0
-
-# gets the postion of the unknown diagonals
-
-
-def get_digPos(cell_x, cell_y, value):
-    position_x = ()
-    position_y = ()
     if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y - 1
         return position_x, position_y
-    elif in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 1
         return position_x, position_y
-    elif in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y - 1
         return position_x, position_y
-    elif in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 1
         return position_x, position_y
-    else:
-        return None
+    return (cell_x, cell_y)
+
 
 # opens the cell that should be open
 
@@ -152,35 +152,6 @@ def check_no_U(num_of_N, num_of_U):
     else:
         return False
 
-# check if the diagonalls of a cell location has unknown
-
-
-def check_diagonals(cell_x, cell_y, value):
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
-        return False
-    elif in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
-        return False
-    elif in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
-        return False
-    elif in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
-        return False
-    else:
-        return value
-
-# check if the crossair of a cell location has unkown
-
-
-def check_crossair(cell_x, cell_y, value):
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
-        return False
-    elif in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
-        return False
-    elif in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
-        return False
-    elif in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
-        return False
-    else:
-        return value
 
 # check if a cell has unknown value
 
@@ -232,5 +203,5 @@ def find_N(board):
 
 
 finePrint = pprint.PrettyPrinter(width=40, compact=True)
-find_diagonals(board)
+find_UCells(board)
 finePrint.pprint(board)
