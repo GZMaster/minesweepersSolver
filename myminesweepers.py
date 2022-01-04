@@ -4,6 +4,8 @@
 # of values
 
 import pprint
+import pandas
+import numpy
 # import pandas
 
 # the variable for the unknown part of the cell
