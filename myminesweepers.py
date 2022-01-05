@@ -4,6 +4,7 @@
 # of values
 
 import pprint
+import numpy as np
 
 # the variable for the unknown part of the cell
 u = 'U'
@@ -56,10 +57,13 @@ def find_UCells(board):
         count_flags = check_value(row, col, F)
 
         if n[i] == count_unknown + count_flags:
-            pos_local = get_Pos(row, col, u)
-            print(pos_local)
-            # pos_x, pos_y = pos_local
-            # flag_cell(pos_x, pos_y)
+            t = n[i]
+            while t > 0:
+                pos_local = get_Pos(row, col, u)
+                pos_x, pos_y = pos_local
+                flag_cell(pos_x, pos_y)
+
+                t -= 1
         else:
             print('mismatch')
     return board
@@ -90,41 +94,49 @@ def check_value(cell_x, cell_y, value):
 
 
 def get_Pos(cell_x, cell_y, value):
-    position_x = ()
-    position_y = ()
+    position_x: int = ()
+    position_y: int = ()
+    positions = ()
     if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y - 1
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y + 1
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 0
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 0
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y - 1
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 1
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y - 1
-        return position_x, position_y
+        positions = np.array([position_x, position_y])
+        return positions
     if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 1
-        return position_x, position_y
-    return (cell_x, cell_y)
+        positions = np.array([position_x, position_y])
+        return positions
 
 
 # opens the cell that should be open
