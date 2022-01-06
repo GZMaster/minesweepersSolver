@@ -60,7 +60,10 @@ def find_UCells(board):
             t = n[i]
             while t > 0:
                 pos_local = get_Pos(row, col, u)
-                pos_x, pos_y = pos_local
+                if pos_local:
+                    pos_x, pos_y = pos_local
+                else:
+                    None
                 flag_cell(pos_x, pos_y)
 
                 t -= 1
@@ -100,42 +103,42 @@ def get_Pos(cell_x, cell_y, value):
     if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y - 1
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y + 1
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 0
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 0
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y - 1
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 1
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y - 1
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
     if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 1
-        positions = np.array([position_x, position_y])
+        positions = position_x, position_y
         return positions
 
 
