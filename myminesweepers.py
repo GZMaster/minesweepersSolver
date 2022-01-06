@@ -34,6 +34,40 @@ board = [
 # Todo: Integrate the board variables so it can accept input data instead of hardcoding
 
 
+def open_cell(board):
+    # the variable for the unknown cells
+    u = 'U'
+    F = 'F'
+    O = 'O'
+
+    row = []
+    col = []
+
+    num = find_N(board)
+    if num:
+        n, pos = num
+    else:
+        return True
+
+    for i in range(len(pos)):
+        resol = pos[i]
+        row, col = resol
+
+        count_flags = check_value(row, col, F)
+
+        if n[i] == count_flags:
+            t = n[i]
+            while t > 0:
+                pos_local = get_Pos(row, col, u)
+                if pos_local:
+                    pos_x, pos_y = pos_local
+                else:
+                    None
+                make_open(pos_x, pos_y)
+
+                t -= 1
+    return(board)
+
 def find_UCells(board):
     # the variable for the unknown cells
     u = 'U'
@@ -65,10 +99,7 @@ def find_UCells(board):
                 else:
                     None
                 flag_cell(pos_x, pos_y)
-
                 t -= 1
-        else:
-            print('mismatch')
     return board
 
 
@@ -145,12 +176,9 @@ def get_Pos(cell_x, cell_y, value):
 # opens the cell that should be open
 
 
-def open_cell(cell_x, cell_y):
+def make_open(cell_x, cell_y):
     o = 'O'
-    u = 'U'
-    found_pos = get_crossPos(cell_x, cell_y, u)
-    pos_x, pos_y = found_pos
-    board[pos_x][pos_y] = o
+    board[cell_x][cell_y] = o
 
 # flags the cell that should have a mine
 
@@ -209,6 +237,7 @@ def find_N(board):
     return (n, locate)
 
 
-finePrint = pprint.PrettyPrinter(width=40, compact=True)
+finePrint = pprint.PrettyPrinter(width=45, compact=False)
 find_UCells(board)
+open_cell(board)
 finePrint.pprint(board)
