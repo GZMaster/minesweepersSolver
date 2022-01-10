@@ -7,355 +7,361 @@ import pprint
 import numpy as np
 import random
 
-# the variable for the unknown part of the cell
-u = 'U'
-F = 'F'
-O = 'O'
 
-row = []
-col = []
+class minesweepersolver:
 
-# the board that will be solved
-# 0 for cells that are empty
-# 1 to n for cells that have numbers of mine around them
-# u for cells that are unknown and not yet revealed
-# f for cells that are flagged
-# O for cells that should be opened
-board = [
-    [u, u, 1, 0, u, u],
-    [u, u, 1, 0, 0, 1],
-    [u, 4, 1, 0, 0, 0],
-    [u, 2, 0, 0, 0, 0],
-    [1, 1, 0, 0, 1, 1],
-    [0, 0, 0, 0, 1, u],
-    [1, 1, 0, 0, 1, 1],
-    [u, 1, 0, 0, 0, 0],
-    [u, 3, 1, 0, 0, 0],
-    [u, u, 2, 1, 1, 0],
-    [u, u, u, u, 1, 0],
-    [u, u, 2, 1, 1, 0],
-    [u, u, 1, 0, 0, 0],
-]
+    # Todo: Integrate the board variables so it can accept input data instead of hardcoding
 
-# Todo: Integrate the board variables so it can accept input data instead of hardcoding
+    def __init__(self):
+        # the variable for the unknown part of the cell
+        u = 'U'
+        F = 'F'
+        O = 'O'
+        
 
-# this method opens cell based on guessing randomly
+        row = []
+        col = []
+            
+        # the board that will be solved
+        # 0 for cells that are empty
+        # 1 to n for cells that have numbers of mine around them
+        # u for cells that are unknown and not yet revealed
+        # f for cells that are flagged
+        # O for cells that should be opened
+        self.board = [
+            [u, u, 1, 0, u, u],
+            [u, u, 1, 0, 0, 1],
+            [u, 4, 1, 0, 0, 0],
+            [u, 2, 0, 0, 0, 0],
+            [1, 1, 0, 0, 1, 1],
+            [0, 0, 0, 0, 1, u],
+            [1, 1, 0, 0, 1, 1],
+            [u, 1, 0, 0, 0, 0],
+            [u, 3, 1, 0, 0, 0],
+            [u, u, 2, 1, 1, 0],
+            [u, u, u, u, 1, 0],
+            [u, u, 2, 1, 1, 0],
+            [u, u, 1, 0, 0, 0],
+        ]
+        # finePrint = pprint.PrettyPrinter(width=45, compact=False)
+        # find_UCells(board)
+        # open_cell(board)
+        # guess_flagcell(board)
+        # finePrint.pprint(board)
 
-def guess_opencell(board):
+    # this method opens cell based on guessing randomly
 
-    num = find_N(board)
-    if num:
-        n, pos = num
-    else:
-        return True
-    
-    for i in range(len(pos)):
-        resol = pos[i]
-        row, col = resol
+    def guess_opencell(self):
 
-        count_unknown = check_value(row, col, u)
-        mines = mine_left(n[i], row, col)
+        num = self.find_N(self.board)
+        if num:
+            n, pos = num
+        else:
+            return True
+        
+        for i in range(len(pos)):
+            resol = pos[i]
+            row, col = resol
 
-        if count_unknown > mines:
-            draw = random.choice([0, count_unknown])
+            count_unknown = self.check_value(row, col, self.u)
+            mines = self.mine_left(n[i], row, col)
 
-            unknown_cell = get_multPos(row, col, u)
-            print(unknown_cell)
-            if unknown_cell:
-                pos_x, pos_y = unknown_cell.pop(draw)
-            else:
-                None
-            flag_cell(pos_x, pos_y)
+            if count_unknown > mines:
+                draw = random.choice([0, count_unknown])
 
-            return
-    
-
-
-# this method flags cell based on guessing the most likely is the flag
-
-
-def guess_flagcell(board):
-
-    num = find_N(board)
-    if num:
-        n, pos = num
-    else:
-        return True
-    
-    for i in range(len(pos)):
-        resol = pos[i]
-        row, col = resol
-
-        count_unknown = check_value(row, col, u)
-        mines = mine_left(n[i], row, col)
-
-        if mines == 1 and count_unknown == 2:
-            draw = random.choice([0, 1])
-
-            unknown_cell = get_multPos(row, col, u)
-            print(unknown_cell)
-            if unknown_cell:
-                pos_x, pos_y = unknown_cell.pop(draw)
-            else:
-                None
-            flag_cell(pos_x, pos_y)
-
-            return
-    
-
-# this method opens the cell that are not mines
-
-
-def open_cell(board):
-
-    num = find_N(board)
-    if num:
-        n, pos = num
-    else:
-        return True
-
-    for i in range(len(pos)):
-        resol = pos[i]
-        row, col = resol
-
-        count_flags = check_value(row, col, F)
-
-        if n[i] == count_flags:
-            t = n[i]
-            while t > 0:
-                pos_local = get_Pos(row, col, u)
-                if pos_local:
-                    pos_x, pos_y = pos_local
+                unknown_cell = self.get_multPos(row, col, self.u)
+                print(unknown_cell)
+                if unknown_cell:
+                    pos_x, pos_y = unknown_cell.pop(draw)
                 else:
                     None
-                make_open(pos_x, pos_y)
+                self.flag_cell(pos_x, pos_y)
 
-                t -= 1
-    return(board)
-
-
-# this method finds the cell with mines and flags them
+                return
+        
 
 
-def find_UCells(board):
-    
-    num = find_N(board)
-    if num:
-        n, pos = num
-    else:
-        return True
+    # this method flags cell based on guessing the most likely is the flag
 
-    for i in range(len(pos)):
-        resol = pos[i]
-        row, col = resol
 
-        count_unknown = check_value(row, col, u)
-        count_flags = check_value(row, col, F)
+    def guess_flagcell(self):
 
-        if n[i] == count_unknown + count_flags:
-            t = n[i]
-            while t > 0:
-                pos_local = get_Pos(row, col, u)
-                if pos_local:
-                    pos_x, pos_y = pos_local
+        num = self.find_N(self.board)
+        if num:
+            n, pos = num
+        else:
+            return True
+        
+        for i in range(len(pos)):
+            resol = pos[i]
+            row, col = resol
+
+            count_unknown = self.check_value(row, col, self.u)
+            mines = self.mine_left(n[i], row, col)
+
+            if mines == 1 and count_unknown == 2:
+                draw = random.choice([0, 1])
+
+                unknown_cell = self.get_multPos(row, col, self.u)
+                print(unknown_cell)
+                if unknown_cell:
+                    pos_x, pos_y = unknown_cell.pop(draw)
                 else:
                     None
-                flag_cell(pos_x, pos_y)
-                t -= 1
-    return board
+                self.flag_cell(pos_x, pos_y)
+
+                return
+        
+
+    # this method opens the cell that are not mines
 
 
-# # this meathod finds more than one unknown and returns them
+    def open_cell(self):
 
-def get_multPos(cell_x, cell_y, value):
-    position_x: int = ()
-    position_y: int = ()
-    positions = []
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
-        position_x = cell_x + 0
-        position_y = cell_y - 1
-        positions.append([position_x, position_y])
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
-        position_x = cell_x + 0
-        position_y = cell_y + 1
-        positions.append([position_x, position_y])       
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
-        position_x = cell_x - 1
-        position_y = cell_y + 0
-        positions.append([position_x, position_y])       
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
-        position_x = cell_x + 1
-        position_y = cell_y + 0
-        positions.append([position_x, position_y])       
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
-        position_x = cell_x - 1
-        position_y = cell_y - 1
-        positions.append([position_x, position_y])       
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
-        position_x = cell_x - 1
-        position_y = cell_y + 1
-        positions.append([position_x, position_y])       
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
-        position_x = cell_x + 1
-        position_y = cell_y - 1
-        positions.append([position_x, position_y])       
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
-        position_x = cell_x + 1
-        position_y = cell_y + 1
-        positions.append([position_x, position_y])       
-    return positions
+        num = self.find_N(self.board)
+        if num:
+            n, pos = num
+        else:
+            return True
+
+        for i in range(len(pos)):
+            resol = pos[i]
+            row, col = resol
+
+            count_flags = self.check_value(row, col, self.F)
+
+            if n[i] == count_flags:
+                t = n[i]
+                while t > 0:
+                    pos_local = self.get_Pos(row, col, self.u)
+                    if pos_local:
+                        pos_x, pos_y = pos_local
+                    else:
+                        None
+                    self.make_open(pos_x, pos_y)
+
+                    t -= 1
+        return(board)
 
 
-# this meathod finds the nunber of mines left next to a numbered cell
+    # this method finds the cell with mines and flags them
 
 
-def mine_left(num_cell, cell_x, cell_y):
-    f = 'F'
-    num_f = check_value(cell_x, cell_y, f)
-    mines = num_cell - num_f
-    return mines
+    def find_UCells(self):
+        
+        num = self.find_N(self.board)
+        if num:
+            n, pos = num
+        else:
+            return True
+
+        for i in range(len(pos)):
+            resol = pos[i]
+            row, col = resol
+
+            count_unknown = self.check_value(row, col, self.u)
+            count_flags = self.check_value(row, col, self.F)
+
+            if n[i] == count_unknown + count_flags:
+                t = n[i]
+                while t > 0:
+                    pos_local = self.get_Pos(row, col, self.u)
+                    if pos_local:
+                        pos_x, pos_y = pos_local
+                    else:
+                        None
+                    self.flag_cell(pos_x, pos_y)
+                    t -= 1
+        return board
 
 
-# this meathod checks for a value around the cell passed to it
+    # # this meathod finds more than one unknown and returns them
 
-
-def check_value(cell_x, cell_y, value):
-    dig_count = 0
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
-        dig_count += 1
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
-        dig_count += 1
-    return dig_count
-
-
-# gets the postition of the unknown crossair
-
-
-def get_Pos(cell_x, cell_y, value):
-    position_x: int = ()
-    position_y: int = ()
-    positions = ()
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
-        position_x = cell_x + 0
-        position_y = cell_y - 1
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
-        position_x = cell_x + 0
-        position_y = cell_y + 1
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
-        position_x = cell_x - 1
-        position_y = cell_y + 0
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
-        position_x = cell_x + 1
-        position_y = cell_y + 0
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
-        position_x = cell_x - 1
-        position_y = cell_y - 1
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
-        position_x = cell_x - 1
-        position_y = cell_y + 1
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
-        position_x = cell_x + 1
-        position_y = cell_y - 1
-        positions = position_x, position_y
-        return positions
-    if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
-        position_x = cell_x + 1
-        position_y = cell_y + 1
-        positions = position_x, position_y
+    def get_multPos(self, cell_x, cell_y, value):
+        position_x: int = ()
+        position_y: int = ()
+        positions = []
+        if self.in_range_height(cell_x, 0) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, 0, -1, value) == value:
+            position_x = cell_x + 0
+            position_y = cell_y - 1
+            positions.append([position_x, position_y])
+        if self.in_range_height(cell_x, 0) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, 0, 1, value) == value:
+            position_x = cell_x + 0
+            position_y = cell_y + 1
+            positions.append([position_x, position_y])       
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, 0) and self.in_cell(cell_x, cell_y, -1, 0, value) == value:
+            position_x = cell_x - 1
+            position_y = cell_y + 0
+            positions.append([position_x, position_y])       
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, 0) and self.in_cell(cell_x, cell_y, 1, 0, value) == value:
+            position_x = cell_x + 1
+            position_y = cell_y + 0
+            positions.append([position_x, position_y])       
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, -1, -1, value) == value:
+            position_x = cell_x - 1
+            position_y = cell_y - 1
+            positions.append([position_x, position_y])       
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, -1, 1, value) == value:
+            position_x = cell_x - 1
+            position_y = cell_y + 1
+            positions.append([position_x, position_y])       
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, 1, -1, value) == value:
+            position_x = cell_x + 1
+            position_y = cell_y - 1
+            positions.append([position_x, position_y])       
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, 1, 1, value) == value:
+            position_x = cell_x + 1
+            position_y = cell_y + 1
+            positions.append([position_x, position_y])       
         return positions
 
 
-# opens the cell that should be open
+    # this meathod finds the nunber of mines left next to a numbered cell
 
 
-def make_open(cell_x, cell_y):
-    o = 'O'
-    board[cell_x][cell_y] = o
+    def mine_left(self, num_cell, cell_x, cell_y):
+        f = 'F'
+        num_f = self.check_value(cell_x, cell_y, f)
+        mines = num_cell - num_f
+        return mines
 
 
-# flags the cell that should have a mine
+    # this meathod checks for a value around the cell passed to it
 
 
-def flag_cell(cell_x, cell_y):
-    f = 'F'
-    board[cell_x][cell_y] = f
+    def check_value(self, cell_x, cell_y, value):
+        dig_count = 0
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, -1, -1, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, -1, 1, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, 1, -1, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, 1, 1, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, 0) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, 0, -1, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, 0) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, 0, 1, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, 0) and self.in_cell(cell_x, cell_y, -1, 0, value) == value:
+            dig_count += 1
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, 0) and self.in_cell(cell_x, cell_y, 1, 0, value) == value:
+            dig_count += 1
+        return dig_count
 
 
-# check if a cell has unknown value
+    # gets the postition of the unknown crossair
 
 
-def in_cell(cell_x, cell_y, num_x, num_y, value):
-    pos_x: int = int(cell_x) + num_x
-    pos_y: int = int(cell_y) + num_y
-    board_value = board[pos_x][pos_y]
-    if board_value == value:
-        return value
-    else:
-        return False
+    def get_Pos(self, cell_x, cell_y, value):
+        position_x: int = ()
+        position_y: int = ()
+        positions = ()
+        if self.in_range_height(cell_x, 0) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, 0, -1, value) == value:
+            position_x = cell_x + 0
+            position_y = cell_y - 1
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, 0) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, 0, 1, value) == value:
+            position_x = cell_x + 0
+            position_y = cell_y + 1
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, 0) and self.in_cell(cell_x, cell_y, -1, 0, value) == value:
+            position_x = cell_x - 1
+            position_y = cell_y + 0
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, 0) and self.in_cell(cell_x, cell_y, 1, 0, value) == value:
+            position_x = cell_x + 1
+            position_y = cell_y + 0
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, -1, -1, value) == value:
+            position_x = cell_x - 1
+            position_y = cell_y - 1
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, -1) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, -1, 1, value) == value:
+            position_x = cell_x - 1
+            position_y = cell_y + 1
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, -1) and self.in_cell(cell_x, cell_y, 1, -1, value) == value:
+            position_x = cell_x + 1
+            position_y = cell_y - 1
+            positions = position_x, position_y
+            return positions
+        if self.in_range_height(cell_x, 1) and self.in_range_width(cell_y, 1) and self.in_cell(cell_x, cell_y, 1, 1, value) == value:
+            position_x = cell_x + 1
+            position_y = cell_y + 1
+            positions = position_x, position_y
+            return positions
 
-# check if the point is in the range of the board array
-# todo: intergrate the range method to know the width and heigth of the board
+
+    # opens the cell that should be open
 
 
-def in_range_height(point, num):
-    if point + num == -1 or point + num >= 12:
-        return False
-    else:
-        return True
+    def make_open(self, cell_x, cell_y):
+        o = 'O'
+        self.board[cell_x][cell_y] = o
 
 
-def in_range_width(point, num):
-    if point + num == -1 or point + num >= 6:
-        return False
-    else:
-        return True
-
-# this method takes the values in a board and store it in individual variables for the soluctions
+    # flags the cell that should have a mine
 
 
-def find_N(board):
-    N = [1, 2, 3, 4, 5, 6, 7, 8]
-    n = []
-    locate = []
-
-    for k in range(len(N)):
-        for i in range(len(board)):
-            for j in range(len(board[i])):
-                if board[i][j] == k and k > 0:
-                    n.append(k)
-                    locate.append((i, j))
-                else:
-                    continue
-
-    return (n, locate)
+    def flag_cell(self, cell_x, cell_y):
+        f = 'F'
+        self.board[cell_x][cell_y] = f
 
 
-finePrint = pprint.PrettyPrinter(width=45, compact=False)
-find_UCells(board)
-open_cell(board)
-guess_flagcell(board)
-finePrint.pprint(board)
+    # check if a cell has unknown value
+
+
+    def in_cell(self, cell_x, cell_y, num_x, num_y, value):
+        pos_x: int = int(cell_x) + num_x
+        pos_y: int = int(cell_y) + num_y
+        board_value = self.board[pos_x][pos_y]
+        if board_value == value:
+            return value
+        else:
+            return False
+
+    # check if the point is in the range of the board array
+    # todo: intergrate the range method to know the width and heigth of the board
+
+
+    def in_range_height(self, point, num):
+        if point + num == -1 or point + num >= 12:
+            return False
+        else:
+            return True
+
+
+    def in_range_width(self, point, num):
+        if point + num == -1 or point + num >= 6:
+            return False
+        else:
+            return True
+
+    # this method takes the values in a board and store it in individual variables for the soluctions
+
+
+    def find_N(self):
+        N = [1, 2, 3, 4, 5, 6, 7, 8]
+        n = []
+        locate = []
+
+        for k in range(len(N)):
+            for i in range(len(self.board)):
+                for j in range(len(self.board[i])):
+                    if self.board[i][j] == k and k > 0:
+                        n.append(k)
+                        locate.append((i, j))
+                    else:
+                        continue
+
+        return (n, locate)
+
+
+    
