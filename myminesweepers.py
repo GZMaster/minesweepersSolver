@@ -22,8 +22,8 @@ col = []
 # f for cells that are flagged
 # O for cells that should be opened
 board = [
-    [u, u, 1, 0, 0, 0],
-    [u, u, 1, 0, 0, 0],
+    [u, u, 1, 0, u, u],
+    [u, u, 1, 0, 0, 1],
     [u, 4, 1, 0, 0, 0],
     [u, 2, 0, 0, 0, 0],
     [1, 1, 0, 0, 1, 1],
@@ -58,18 +58,17 @@ def guess_flagcell(board):
         mines = mine_left(n[i], row, col)
 
         if mines == 1 and count_unknown == 2:
-            draw = random(0, 1)
+            draw = random.choice([0, 1])
 
             unknown_cell = get_multPos(row, col, u)
+            print(unknown_cell)
             if unknown_cell:
-                pos_x, pos_y = unknown_cell(draw)
+                pos_x, pos_y = unknown_cell.pop(draw)
             else:
                 None
             flag_cell(pos_x, pos_y)
 
             return
-
-
     
 
 # this method opens the cell that are not mines
@@ -139,40 +138,40 @@ def find_UCells(board):
 def get_multPos(cell_x, cell_y, value):
     position_x: int = ()
     position_y: int = ()
-    positions = {}
+    positions = []
     if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y - 1
-        positions.update([position_x, position_y])
+        positions.append([position_x, position_y])
     if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
         position_x = cell_x + 0
         position_y = cell_y + 1
-        positions.update([position_x, position_y])       
+        positions.append([position_x, position_y])       
     if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 0
-        positions.update([position_x, position_y])       
+        positions.append([position_x, position_y])       
     if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 0
-        positions.update([position_x, position_y])       
+        positions.append([position_x, position_y])       
     if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y - 1
-        positions.update([position_x, position_y])       
+        positions.append([position_x, position_y])       
     if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
         position_x = cell_x - 1
         position_y = cell_y + 1
-        positions.update([position_x, position_y])       
+        positions.append([position_x, position_y])       
     if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y - 1
-        positions.update([position_x, position_y])       
+        positions.append([position_x, position_y])       
     if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
         position_x = cell_x + 1
         position_y = cell_y + 1
-        positions.update([position_x, position_y])       
-
+        positions.append([position_x, position_y])       
+    return positions
 
 
 # this meathod finds the nunber of mines left next to a numbered cell
