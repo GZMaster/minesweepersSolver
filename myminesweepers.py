@@ -39,6 +39,38 @@ board = [
 
 # Todo: Integrate the board variables so it can accept input data instead of hardcoding
 
+# this method opens cell based on guessing randomly
+
+def guess_opencell(board):
+
+    num = find_N(board)
+    if num:
+        n, pos = num
+    else:
+        return True
+    
+    for i in range(len(pos)):
+        resol = pos[i]
+        row, col = resol
+
+        count_unknown = check_value(row, col, u)
+        mines = mine_left(n[i], row, col)
+
+        if count_unknown > mines:
+            draw = random.choice([0, count_unknown])
+
+            unknown_cell = get_multPos(row, col, u)
+            print(unknown_cell)
+            if unknown_cell:
+                pos_x, pos_y = unknown_cell.pop(draw)
+            else:
+                None
+            flag_cell(pos_x, pos_y)
+
+            return
+    
+
+
 # this method flags cell based on guessing the most likely is the flag
 
 
