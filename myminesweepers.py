@@ -5,9 +5,15 @@
 
 import pprint
 import numpy as np
+import random
 
 # the variable for the unknown part of the cell
 u = 'U'
+F = 'F'
+O = 'O'
+
+row = []
+col = []
 
 # the board that will be solved
 # 0 for cells that are empty
@@ -33,15 +39,43 @@ board = [
 
 # Todo: Integrate the board variables so it can accept input data instead of hardcoding
 
+# this method flags cell based on guessing the most likely is the flag
+
+
+def guess_flagcell(board):
+
+    num = find_N(board)
+    if num:
+        n, pos = num
+    else:
+        return True
+    
+    for i in range(len(pos)):
+        resol = pos[i]
+        row, col = resol
+
+        count_unknown = check_value(row, col, u)
+        mines = mine_left(n[i], row, col)
+
+        if mines == 1 and count_unknown == 2:
+            draw = random(0, 1)
+
+            unknown_cell = get_multPos(row, col, u)
+            if unknown_cell:
+                pos_x, pos_y = unknown_cell(draw)
+            else:
+                None
+            flag_cell(pos_x, pos_y)
+
+            return
+
+
+    
+
+# this method opens the cell that are not mines
+
 
 def open_cell(board):
-    # the variable for the unknown cells
-    u = 'U'
-    F = 'F'
-    O = 'O'
-
-    row = []
-    col = []
 
     num = find_N(board)
     if num:
@@ -68,15 +102,12 @@ def open_cell(board):
                 t -= 1
     return(board)
 
+
+# this method finds the cell with mines and flags them
+
+
 def find_UCells(board):
-    # the variable for the unknown cells
-    u = 'U'
-    F = 'F'
-    O = 'O'
-
-    row = []
-    col = []
-
+    
     num = find_N(board)
     if num:
         n, pos = num
@@ -101,6 +132,60 @@ def find_UCells(board):
                 flag_cell(pos_x, pos_y)
                 t -= 1
     return board
+
+
+# # this meathod finds more than one unknown and returns them
+
+def get_multPos(cell_x, cell_y, value):
+    position_x: int = ()
+    position_y: int = ()
+    positions = {}
+    if in_range_height(cell_x, 0) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 0, -1, value) == value:
+        position_x = cell_x + 0
+        position_y = cell_y - 1
+        positions.update([position_x, position_y])
+    if in_range_height(cell_x, 0) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 0, 1, value) == value:
+        position_x = cell_x + 0
+        position_y = cell_y + 1
+        positions.update([position_x, position_y])       
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, -1, 0, value) == value:
+        position_x = cell_x - 1
+        position_y = cell_y + 0
+        positions.update([position_x, position_y])       
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, 0) and in_cell(cell_x, cell_y, 1, 0, value) == value:
+        position_x = cell_x + 1
+        position_y = cell_y + 0
+        positions.update([position_x, position_y])       
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, -1, -1, value) == value:
+        position_x = cell_x - 1
+        position_y = cell_y - 1
+        positions.update([position_x, position_y])       
+    if in_range_height(cell_x, -1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, -1, 1, value) == value:
+        position_x = cell_x - 1
+        position_y = cell_y + 1
+        positions.update([position_x, position_y])       
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, -1) and in_cell(cell_x, cell_y, 1, -1, value) == value:
+        position_x = cell_x + 1
+        position_y = cell_y - 1
+        positions.update([position_x, position_y])       
+    if in_range_height(cell_x, 1) and in_range_width(cell_y, 1) and in_cell(cell_x, cell_y, 1, 1, value) == value:
+        position_x = cell_x + 1
+        position_y = cell_y + 1
+        positions.update([position_x, position_y])       
+
+
+
+# this meathod finds the nunber of mines left next to a numbered cell
+
+
+def mine_left(num_cell, cell_x, cell_y):
+    f = 'F'
+    num_f = check_value(cell_x, cell_y, f)
+    mines = num_cell - num_f
+    return mines
+
+
+# this meathod checks for a value around the cell passed to it
 
 
 def check_value(cell_x, cell_y, value):
@@ -180,6 +265,7 @@ def make_open(cell_x, cell_y):
     o = 'O'
     board[cell_x][cell_y] = o
 
+
 # flags the cell that should have a mine
 
 
@@ -240,4 +326,5 @@ def find_N(board):
 finePrint = pprint.PrettyPrinter(width=45, compact=False)
 find_UCells(board)
 open_cell(board)
+guess_flagcell(board)
 finePrint.pprint(board)
