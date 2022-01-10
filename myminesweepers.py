@@ -141,7 +141,7 @@ class minesweepersolver:
                     self.make_open(pos_x, pos_y)
 
                     t -= 1
-        return(board)
+        
 
 
     # this method finds the cell with mines and flags them
@@ -172,7 +172,7 @@ class minesweepersolver:
                         None
                     self.flag_cell(pos_x, pos_y)
                     t -= 1
-        return board
+        
 
 
     # # this meathod finds more than one unknown and returns them
